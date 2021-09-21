@@ -1,0 +1,346 @@
+<html>
+    <head>
+        <title>Paint Canvas</title>
+        <style type = "text/css">
+            body{
+                    font-family: sans-serif; 
+                    color:darkslategray;
+                    background-color: #f2eecb;
+                }
+
+            table, tr, td{
+                border: 5px solid #b97455;
+                border-collapse: collapse;
+            }
+
+            .sliderContainer{
+                width:100%;
+            }
+
+            .slider{
+                width:80%;
+                -webkit-appearance: none;
+                background: #faf9ed;
+                opacity: 0.7;
+            }
+
+            .slider:hover{
+                opacity: 1;
+            }
+
+            #lWidth::-webkit-slider-thumb{
+                -webkit-appearance: none;
+                appearance: none;
+                width: 25px;
+                height: 25px;
+                background: black;
+                opacity: 0.7;
+                cursor: pointer;
+            }
+
+            #redRange::-webkit-slider-thumb{
+                -webkit-appearance: none;
+                appearance: none;
+                width: 25px;
+                height: 25px;
+                background: #ff0000;
+                opacity: 0.7;
+                cursor: pointer;
+            }
+
+            #greenRange::-webkit-slider-thumb{
+                -webkit-appearance: none;
+                appearance: none;
+                width: 25px;
+                height: 25px;
+                background: #00ff00;
+                opacity: 0.7;
+                cursor: pointer;
+            }
+
+            #blueRange::-webkit-slider-thumb{
+                -webkit-appearance: none;
+                appearance: none;
+                width: 25px;
+                height: 25px;
+                background: #0000ff;
+                opacity: 0.7;
+                cursor: pointer;
+            }
+            
+        </style>
+    </head>
+    <body>
+        
+        <p></p>
+        <table border = "1">
+            <tr>
+                <td id = "mainCanvasCell" colspan = "5">
+                    <canvas id = "paint" width = "900" height = "450" style = "border: 1px solid #b97455; border-collapse: collapse;"></canvas>
+                </td>
+                <td id = colourPicker rowspan = "3" style = "text-align: center;">
+                    <button id = "clearButton">Clear</button><br><br>
+                    <button id = "saveButton" onclick = 'download()'>Save</button><br><br><br>
+                    <table id = 'colourPalette' border = "1.5" onclick = 'setColour()'>
+                        <caption>Colour Picker</caption>
+                        <tr>
+                            <td id = 'white' width = "45" height = "45" style = 'background-color: white;''></td>
+                            <td id = 'silver' width = "45" height = "45" style = 'background-color: silver;'></td>
+                        </tr>
+                        <tr>
+                            <td id = 'grey' width = "45" height = "45" style = 'background-color: gray;'></td>
+                            <td id = 'black' width = "45" height = "45" style = 'background-color: black;'></td>
+                        </tr>
+                        <tr>
+                            <td id = 'red' width = "45" height = "45" style = 'background-color: red;'></td>
+                            <td id = 'maroon' width = "45" height = "45" style = 'background-color: maroon;'></td>
+                        </tr>
+                        <tr>
+                            <td id = 'yellow' width = "45" height = "45" style = 'background-color: yellow;'></td>
+                            <td id = 'olive' width = "45" height = "45" style = 'background-color: olive;'></td>
+                        </tr>
+                        <tr>
+                            <td id = 'lime' width = "45" height = "45" style = 'background-color: lime;'></td>
+                            <td id = 'green' width = "45" height = "45" style = 'background-color: green;'></td>
+                        </tr>
+                        <tr>
+                            <td id = 'aqua' width = "45" height = "45" style = 'background-color: aqua;'></td>
+                            <td id = 'teal' width = "45" height = "45" style = 'background-color: teal;'></td>
+                        </tr>
+                        <tr>
+                            <td id = 'blue' width = "45" height = "45" style = 'background-color: blue;'></td>
+                            <td id = 'navy' width = "45" height = "45" style = 'background-color: navy;'></td>
+                        </tr>
+                        <tr>
+                            <td class = 'colour' id = 'fuchsia' width = "45" height = "45" style = 'background-color: fuchsia;'></td>
+                            <td class = 'colour' id = 'purple' width = "45" height = "45" style = 'background-color: purple;'></td>
+                        </tr>
+                    </table>
+                </td>
+                <td style = "text-align: center;" id = pencilAndRubber rowspan="3" width = "150">
+                    Pencil<br><br><img src = "pencilAlt.png" id = "pencilPic" width = "80" height = "80" onmouseover="pencilEnlarge()" onmouseout="pencilShrink()" onclick="pencil()">
+                    <br><br><br><br><br>
+                    Rubber<br><br><img src = "eraser2.png" id = 'rubberPic' width = '80' height = '80' onmouseover="rubberEnlarge()" onmouseout="rubberShrink()" onclick="rubber()">
+                </td>
+            </tr>
+            <tr>
+                <td id = "previewCell" width = "120" height = "120" align = "center" colspan = "1">
+                    <label>Preview</label><br>
+                    <canvas id = "preview" width = "100" height = "100"></canvas>
+                </td>
+                
+                <td id = "lineWidthCell" colspan = "2" style = "text-align: center;">
+                    <div class = 'sliderContainer'>
+                        <label for = "lWidth">Select Line Width</label><br>
+                        <input type = "range" id = "lWidth" name = "lWidth" min = "1" max = "70"  class = "slider">
+                    </div>
+                </td>
+                
+                <td id = colourRangeCell colspan = "2" style = "text-align: center;">
+                    <div id = rgbSliders class = 'sliderContainer'>
+                        <p>
+                            <label>Red  </label><input id = "redRange" type = "range" max = "255" value = "50" class = 'slider'>
+                        </p>
+                        <p>
+                            <label>Green  </label><input id = "greenRange" type = "range" max = "255" value = "50" class = 'slider'>
+                        </p>
+                        <p>
+                            <label>Blue  </label><input id = "blueRange" type = "range" max = "255" value = "50" class = 'slider'>
+                        </p>
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <script>
+            //Choosing colour
+            //colour picker
+            var colourPalette = document.getElementById(colourPalette)
+            function setColour()
+            {
+                lineColour = this.event.target.id;
+                //update preview
+                var previewCanvas = document.getElementById('preview')
+                var previewCtx = previewCanvas.getContext("2d")
+                previewCtx.beginPath();
+                previewCtx.arc(previewCanvas.width / 2, previewCanvas.height / 2, (parseInt(lWidth.value) / 2), 0, Math.PI * 2, true);
+                previewCtx.fillStyle = lineColour;
+                previewCtx.fill();
+                console.log(lineColour);
+            }
+            //converting r, g, b values to hex
+            function rgbToHex(c)
+            {
+                var hex = c.toString(16);
+                return hex.length == 1 ? "0" + hex : hex;
+            }; 
+            function calcRGB(r, g, b)
+            {
+                return "#" + rgbToHex(r) + rgbToHex(g) + rgbToHex(b)
+            };
+            //taking info from rgb sliders to determine line colour
+            var lineColour = calcRGB(parseInt(redRange.value), parseInt(greenRange.value), parseInt(blueRange.value));
+            console.log(lineColour);
+            var rgbSliders = document.getElementById('rgbSliders');
+            rgbSliders.oninput = function()
+            {
+                lineColour = calcRGB(parseInt(redRange.value), parseInt(greenRange.value), parseInt(blueRange.value));
+                console.log('New line colour: ', lineColour);
+                previewCtx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+                previewCtx.beginPath();
+                previewCtx.arc(previewCanvas.width / 2, previewCanvas.height / 2, (parseInt(lWidth.value) / 2), 0, Math.PI * 2, true);
+                previewCtx.fillStyle = lineColour;
+                previewCtx.fill();
+            }
+
+
+
+            //selecting line width
+            var lWidth = document.getElementById('lWidth')
+            var previewCell = document.getElementById('previewCell')
+
+            //line width preview
+            var previewCanvas = document.getElementById('preview')
+            var previewCtx = previewCanvas.getContext("2d")
+            previewCtx.clearRect(0, 0, previewCanvas.width, previewCanvas.height)
+            previewCtx.beginPath();
+            previewCtx.arc(previewCanvas.width / 2, previewCanvas.height / 2, (parseInt(lWidth.value) / 2), 0, Math.PI * 2, true);
+            previewCtx.fillStyle = lineColour;
+            previewCtx.fill();
+
+            //update line preview
+            lWidth.oninput = function()
+            {
+                previewCtx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+                previewCtx.beginPath();
+                previewCtx.arc(previewCanvas.width / 2, previewCanvas.height / 2, (parseInt(lWidth.value) / 2), 0, Math.PI * 2, true);
+                previewCtx.fillStyle = lineColour;
+                previewCtx.fill();
+            }
+
+            var canvas = document.getElementById("paint");
+            var ctx = canvas.getContext("2d")
+
+            //Pencil drawing
+            function pencil()
+            {
+                canvas.style.cursor = "url(BluePencil.cur) , pointer"; //changing the cursor into a pencil
+                ctx.globalCompositeOperation = 'source-over';
+                var paint = false;
+
+                function startPos (e)
+                {
+                    paint = true;
+                    draw(e);
+                }
+
+                function endPos ()
+                {
+                    paint = false;
+                    ctx.beginPath()
+                }
+
+                function draw(e)
+                {
+                    if (!paint)
+                    {
+                        return
+                    }
+                    ctx.lineWidth = parseInt(lWidth.value);
+                    ctx.lineCap = 'round';
+                    ctx.lineTo(e.clientX - canvas.getBoundingClientRect().left, e.clientY - canvas.getBoundingClientRect().top);
+                    ctx.strokeStyle = lineColour
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.moveTo(e.clientX - canvas.getBoundingClientRect().left, e.clientY - canvas.getBoundingClientRect().top);
+                }
+
+                canvas.addEventListener('mousedown', startPos, false);
+                canvas.addEventListener('mouseup', endPos, false);
+                canvas.addEventListener('mousemove', draw, false)
+                canvas.addEventListener('mouseleave', endPos, false)
+            }
+
+            //using the rubber
+            function rubber()
+            {
+                canvas.style.cursor = "url(Eraser.cur) , pointer"; //changing cursor into a rubber
+                ctx.globalCompositeOperation = 'destination-out';
+                var rubOut = false;
+
+                function startPosR (e)
+                {
+                    rubOut = true;
+                    rubbing(e);
+                }
+
+                function endPosR ()
+                {
+                    rubOut = false;
+                    ctx.beginPath()
+                }
+
+                function rubbing(e)
+                {
+                    if (!rubOut)
+                    {
+                        return
+                    }
+                    ctx.lineWidth = parseInt(lWidth.value);
+                    ctx.lineCap = 'round';
+                    ctx.lineTo(e.clientX - canvas.getBoundingClientRect().left, e.clientY - canvas.getBoundingClientRect().top);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.moveTo(e.clientX - canvas.getBoundingClientRect().left, e.clientY - canvas.getBoundingClientRect().top);
+                }
+
+                canvas.addEventListener('mousedown', startPosR, false);
+                canvas.addEventListener('mouseup', endPosR, false);
+                canvas.addEventListener('mousemove', rubbing, false)
+                canvas.addEventListener('mouseleave', endPosR, false)
+            }
+
+            //clearing the canvas
+            var clearButton = document.getElementById('clearButton');
+            clearButton.addEventListener('click', function(){ctx.clearRect(0, 0, canvas.width, canvas.height)})
+
+            //saving the canvas as an image download
+            function download()
+            {
+                var image = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+                window.location.href = image;
+            }
+
+            //jazzing up pencil and rubber icons
+            var pencilPic = document.getElementById('pencilPic');
+            
+            function pencilEnlarge()
+            {
+                document.getElementById('pencilPic').style.height='120';
+                document.getElementById('pencilPic').style.width='120';
+            }
+
+            function pencilShrink()
+            {
+                document.getElementById('pencilPic').style.height='80';
+                document.getElementById('pencilPic').style.width='80';
+            }
+
+            var rubberPic = document.getElementById('rubberPic');
+            
+            function rubberEnlarge()
+            {
+                document.getElementById('rubberPic').style.height='120';
+                document.getElementById('rubberPic').style.width='120';
+            }
+
+            function rubberShrink()
+            {
+                document.getElementById('rubberPic').style.height='80';
+                document.getElementById('rubberPic').style.width='80';
+            }
+
+            window.addEventListener('load', pencil(), false);
+        </script>
+        <image id = 'theImage'></image>
+    </body>
+</html>
